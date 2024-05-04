@@ -1,13 +1,8 @@
 name: Build and publish image to Docker hub
+
 on:
-  workflow_run:
-    workflows: ["Create Ouitoulia Release"]
-    branches:
-      - '10.1.x'
-      - '10.2.x'
-      - '10.3.x'
-    types:
-      - completed
+  repository_dispatch:
+    types: [trigger-workflow]
 
 jobs:
   publish_image:
@@ -30,7 +25,7 @@ jobs:
       - name: Get Ouitoulia latest version
         id: data
         run: |
-          echo "ouitoulia_tag=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "ouitoulia_tag=${{ github.event.client_payload.version }}" >> $GITHUB_ENV
         shell: bash
 
       - name: Fix version in Dockerfile

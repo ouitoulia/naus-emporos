@@ -8,10 +8,7 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-      - name: build
-        run: |
-          docker build -t ouitoulia/naus-emporos:latest .
-      - name: publish
+      - name: build and publish
         run: |
           docker login -u ouitoulia -p ${{ secrets.DOCKER_HUB_TOKEN }}
-          docker push ouitoulia/naus-emporos:latest
+          docker buildx build --provenance=true --sbom=true -t ouitoulia/naus-emporos:latest --push .

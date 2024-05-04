@@ -6,6 +6,7 @@ on:
 
 jobs:
   publish_image:
+    name: "Build and publish Ouitoulia image"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -35,9 +36,9 @@ jobs:
         run: |
           # Modifico la versione nel Dockerfile con ${{ env.ouitoulia_tag }}
           sed -i "s/ENV OUITOULIA_VERSION .*/ENV OUITOULIA_VERSION ${{ env.ouitoulia_tag }}/" Dockerfile
-          git add Dockerfile
-          git commit -m "Update Dockerfile version ${{ env.ouitoulia_tag }}"
-          git push origin
+          # git add Dockerfile
+          # git commit -m "Update Dockerfile version ${{ env.ouitoulia_tag }}"
+          # git push origin
         shell: bash
 
       - name: Set up Docker Buildx
@@ -46,5 +47,5 @@ jobs:
         run: |
           docker login -u ouitoulia -p ${{ secrets.DOCKER_HUB_TOKEN }}
           docker buildx create --use
-          docker buildx build --provenance=true --sbom=true -t ouitoulia/naus-emporos:latest --push .
+          docker buildx build --provenance=true --sbom=true -t ouitoulia/naus-emporos:${{ env.ouitoulia_tag }} --push .
         shell: bash

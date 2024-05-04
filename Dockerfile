@@ -60,7 +60,7 @@ RUN { \
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/
 
-# 2024-05-01: https://github.com/ouitoulia/diagraphe/releases/tag/10.2.37
+# https://github.com/ouitoulia/diagraphe/releases
 ENV OUITOULIA_VERSION 10.2.37
 
 # https://github.com/docker-library/drupal/pull/259

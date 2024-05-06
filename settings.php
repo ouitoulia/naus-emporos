@@ -637,7 +637,7 @@ $settings['file_private_path'] = '/opt/drupal/private-files';
  *
  * @see \Drupal\Component\FileSystem\FileSystem::getOsTemporaryDirectory()
  */
-# $settings['file_temp_path'] = '/tmp';
+$settings['file_temp_path'] = '/opt/drupal/tmp';
 
 /**
  * Session write interval:

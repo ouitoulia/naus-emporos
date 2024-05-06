@@ -1,12 +1,13 @@
-name: Build and publish image to Docker hub
+name: Build and publish images to Docker hub
 
 on:
   repository_dispatch:
+    name: "Build and publish images to Docker hub"
     types: [trigger-workflow]
 
 jobs:
   publish_image:
-    name: "Build and publish Ouitoulia image"
+    name: "Build and publish images to Docker hub"
     runs-on: ubuntu-latest
     permissions:
       contents: write

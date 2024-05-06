@@ -30,6 +30,7 @@ jobs:
         id: data
         run: |
           echo "ouitoulia_tag=${{ github.event.client_payload.version }}" >> $GITHUB_ENV
+          echo "ouitoulia_minor=$(echo "${{ github.event.client_payload.version }}" | cut -d '.' -f1,2)" >> $GITHUB_ENV
         shell: bash
 
       - name: Fix version in Dockerfile
@@ -48,4 +49,6 @@ jobs:
           docker login -u ouitoulia -p ${{ secrets.DOCKER_HUB_TOKEN }}
           docker buildx create --use
           docker buildx build --provenance=true --sbom=true -t ouitoulia/naus-emporos:${{ env.ouitoulia_tag }} --push .
+          docker buildx build --provenance=true --sbom=true -t ouitoulia/naus-emporos:${{ env.ouitoulia_minor }} --push .
+          docker buildx build --provenance=true --sbom=true -t ouitoulia/naus-emporos:latest --push .
         shell: bash

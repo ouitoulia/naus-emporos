@@ -36,9 +36,11 @@ Questi i 3 modi principali:
 A) monta `composer.custom.json:/opt/drupal/composer.custom.json` e aggiungi i tuoi moduli,
 in questo modo non stai modificando il `composer.json` presente nell'immagine, quindi ad ogni 
 aggiornamento di questa immagine avrai la versione aggiornata
+
 B) monta `composer.json:/opt/drupal/composer.json` ad ogni aggiornamento dell'immagine dovresti
 aggiornare il tuo `composer.json` con quello presente su ouitoulia/diagraphe/composer.json,
 rispettando la versione
+
 C) fai il build di un'immagine partendo da `FROM ouitoulia/naus-emporos:<tag>`
 aggiungendo le tue personalizzazioni
 

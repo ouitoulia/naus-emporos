@@ -38,9 +38,6 @@ jobs:
         run: |
           # Modifico la versione nel Dockerfile con ${{ env.ouitoulia_tag }}
           sed -i "s/ENV OUITOULIA_VERSION .*/ENV OUITOULIA_VERSION ${{ env.ouitoulia_tag }}/" Dockerfile
-          # git add Dockerfile
-          # git commit -m "Update Dockerfile version ${{ env.ouitoulia_tag }}"
-          # git push origin
         shell: bash
 
       - name: Set up Docker Buildx
@@ -52,4 +49,11 @@ jobs:
           docker buildx build --provenance=true --sbom=true -t ouitoulia/naus-emporos:${{ env.ouitoulia_tag }} --push .
           docker buildx build --provenance=true --sbom=true -t ouitoulia/naus-emporos:${{ env.ouitoulia_minor }} --push .
           docker buildx build --provenance=true --sbom=true -t ouitoulia/naus-emporos:latest --push .
+        shell: bash
+
+      - name: Apply version changes
+        run: |
+          git add Dockerfile
+          git commit -m "Update Dockerfile version ${{ env.ouitoulia_tag }}"
+          git push origin
         shell: bash

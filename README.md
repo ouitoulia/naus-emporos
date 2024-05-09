@@ -33,13 +33,13 @@ I volumi per rendere persistenti i dati:
 ## Come personalizzare le dipendenze
 Questi i 3 modi principali:
 
-1) monta `composer.custom.json:/opt/drupal/composer.custom.json` e aggiungi i tuoi moduli,
+A) monta `composer.custom.json:/opt/drupal/composer.custom.json` e aggiungi i tuoi moduli,
 in questo modo non stai modificando il `composer.json` presente nell'immagine, quindi ad ogni 
 aggiornamento di questa immagine avrai la versione aggiornata
-2) monta `composer.json:/opt/drupal/composer.json` ad ogni aggiornamento dell'immagine dovresti
+B) monta `composer.json:/opt/drupal/composer.json` ad ogni aggiornamento dell'immagine dovresti
 aggiornare il tuo `composer.json` con quello presente su ouitoulia/diagraphe/composer.json,
 rispettando la versione
-3) fai il build di un'immagine partendo da `FROM ouitoulia/naus-emporos:<tag>`
+C) fai il build di un'immagine partendo da `FROM ouitoulia/naus-emporos:<tag>`
 aggiungendo le tue personalizzazioni
 
 ## Come personalizzare settings.php

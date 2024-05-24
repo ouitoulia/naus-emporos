@@ -47,6 +47,33 @@ aggiungendo le tue personalizzazioni
 ## Come personalizzare settings.php
 Monta `settings.local.php:/var/www/html/sites/default/settings.local.php`
 
+## Esempio Docker compose
+```
+services:
+  db:
+    ...
+  
+  drupal:
+    image: ouitoulia/naus-emporos:10.2
+    
+    ...
+    
+    volumes:
+      - /path/to/composer.custom.json:/opt/drupal/composer.custom.json
+      - /path/to/config:/opt/drupal/config
+      - /path/to/private-files:/opt/drupal/private-files
+      - drupal-cache:/var/www/html
+      - /path/to/settings.local.php:/var/www/html/sites/default/settings.local.php
+      - /path/to/public-files:/var/www/html/public-files
+  
+  webserver:
+    ...
+    volumes:
+    - drupal-cache:/var/www/html
+    - /path/to/public-files:/var/www/html/public-files
+    ...
+```
+
 ## License
 ![GitHub](https://img.shields.io/github/license/ouitoulia/naus-emporos)
 

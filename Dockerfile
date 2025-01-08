@@ -1,5 +1,5 @@
 #
-# NOTE: THIS IS A FORK https://github.com/docker-library/drupal/blob/master/10.2/php8.3/fpm-alpine3.19/Dockerfile
+# NOTE: THIS IS A FORK https://github.com/docker-library/drupal/blob/master/10.3/php8.3/fpm-alpine3.21/Dockerfile
 #
 # NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
 #
@@ -46,9 +46,6 @@ RUN set -eux; \
 	apk add --no-network --virtual .drupal-phpexts-rundeps $runDeps; \
 	apk del --no-network .build-deps
 
-# Add git for apply patch to modules
-RUN apk add --no-cache git
-
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
@@ -57,6 +54,12 @@ RUN { \
 		echo 'opcache.max_accelerated_files=4000'; \
 		echo 'opcache.revalidate_freq=60'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+
+# Add git for apply patch to modules
+RUN apk add --no-cache git
+
+# Install redis extension
+RUN docker-php-ext-install redis
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/
 

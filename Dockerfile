@@ -59,7 +59,6 @@ RUN { \
 RUN apk add --no-cache git
 
 # Install redis extension
-
 RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && \
     pecl update-channels && \
     pecl install redis && \

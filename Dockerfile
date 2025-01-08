@@ -59,7 +59,12 @@ RUN { \
 RUN apk add --no-cache git
 
 # Install redis extension
-RUN docker-php-ext-install redis
+
+RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && \
+    pecl update-channels && \
+    pecl install redis && \
+    docker-php-ext-enable redis && \
+    apk del $PHPIZE_DEPS
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/
 

@@ -1,5 +1,5 @@
 #
-# NOTE: THIS IS A FORK https://github.com/docker-library/drupal/blob/master/10.3/php8.3/fpm-alpine3.21/Dockerfile
+# NOTE: THIS IS A FORK https://github.com/docker-library/drupal/blob/master/10.5/php8.3/fpm-alpine3.22/Dockerfile
 #
 # NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
 #
@@ -7,7 +7,7 @@
 #
 
 # https://www.drupal.org/docs/system-requirements/php-requirements
-FROM php:8.3-fpm-alpine
+FROM php:8.3-fpm-alpine3.22
 
 # install the PHP extensions we need
 RUN set -eux; \
@@ -19,7 +19,7 @@ RUN set -eux; \
 		libpng-dev \
 		libwebp-dev \
 		libzip-dev \
-# postgresql-dev is needed for https://bugs.alpinelinux.org/issues/3642
+# postgresql-dev is needed for https://bugs.alpinelinux.org/issues/3642 \
 		postgresql-dev \
 	; \
 	\
@@ -31,7 +31,6 @@ RUN set -eux; \
 	\
 	docker-php-ext-install -j "$(nproc)" \
 		gd \
-		opcache \
 		pdo_mysql \
 		pdo_pgsql \
 		zip \
@@ -81,6 +80,8 @@ WORKDIR /opt/drupal
 RUN set -eux; \
 	export COMPOSER_HOME="$(mktemp -d)"; \
 	composer create-project --no-interaction --no-install --no-cache "ouitoulia/diagraphe:$OUITOULIA_VERSION" ./; \
+# https://github.com/docker-library/drupal/pull/266#issuecomment-2273985526 \
+  composer check-platform-reqs; \
 	rmdir /var/www/html; \
 	ln -sf /opt/drupal/web /var/www/html; \
   composer --no-interaction require drush/drush --no-install; \
@@ -96,7 +97,7 @@ RUN mkdir "web/assets-cache"; \
 	chown -R www-data:www-data config; \
   mkdir "tmp"; \
 	chown -R www-data:www-data tmp; \
-	# delete composer cache
+	# delete composer cache \
 	rm -rf "$COMPOSER_HOME"
 
 COPY ./settings.php /opt/drupal/web/sites/default/

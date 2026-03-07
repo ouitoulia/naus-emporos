@@ -67,25 +67,25 @@ RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && \
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/
 
 # https://github.com/ouitoulia/diagraphe/releases
-ENV OUITOULIA_VERSION 10.5.0
+ENV OUITOULIA_VERSION=10.5.0
 
 # https://github.com/docker-library/drupal/pull/259
 # https://github.com/moby/buildkit/issues/4503
 # https://github.com/composer/composer/issues/11839
 # https://github.com/composer/composer/issues/11854
 # https://github.com/composer/composer/blob/94fe2945456df51e122a492b8d14ac4b54c1d2ce/src/Composer/Console/Application.php#L217-L218
-ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /opt/drupal
 RUN set -eux; \
 	export COMPOSER_HOME="$(mktemp -d)"; \
 	composer create-project --no-interaction --no-install --no-cache "ouitoulia/diagraphe:$OUITOULIA_VERSION" ./; \
-# https://github.com/docker-library/drupal/pull/266#issuecomment-2273985526 \
-  composer check-platform-reqs; \
 	rmdir /var/www/html; \
 	ln -sf /opt/drupal/web /var/www/html; \
   composer --no-interaction require drush/drush --no-install; \
-  composer --no-interaction install
+  composer --no-interaction install; \
+# https://github.com/docker-library/drupal/pull/266#issuecomment-2273985526 \
+  composer check-platform-reqs
 
 RUN mkdir "web/assets-cache"; \
 	chown -R www-data:www-data web/assets-cache; \

@@ -37,7 +37,7 @@ jobs:
       - name: Fix version in Dockerfile
         run: |
           # Modifico la versione nel Dockerfile con ${{ env.ouitoulia_tag }}
-          sed -i "s/ENV OUITOULIA_VERSION .*/ENV OUITOULIA_VERSION ${{ env.ouitoulia_tag }}/" Dockerfile
+          sed -Ei "s/^ENV OUITOULIA_VERSION(=| ).*/ENV OUITOULIA_VERSION=${{ env.ouitoulia_tag }}/" Dockerfile
         shell: bash
 
       - name: Set up Docker Buildx

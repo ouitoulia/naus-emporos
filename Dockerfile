@@ -7,7 +7,7 @@
 #
 
 # https://www.drupal.org/docs/system-requirements/php-requirements
-FROM php:8.3-fpm-alpine3.22
+FROM php:8.4-fpm-alpine3.23
 
 # install the PHP extensions we need
 RUN set -eux; \
@@ -32,7 +32,6 @@ RUN set -eux; \
 	docker-php-ext-install -j "$(nproc)" \
 		gd \
 		pdo_mysql \
-		pdo_pgsql \
 		zip \
 	; \
 	\
@@ -55,14 +54,55 @@ RUN { \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # Add git for apply patch to modules
-RUN apk add --no-cache git
+RUN apk add --no-cache git patch bind-tools && \
+    apk add --no-cache pcre-dev autoconf gcc make libc-dev $PHPIZE_DEPS
 
 # Install redis extension
-RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && \
-    pecl update-channels && \
+RUN pecl update-channels && \
     pecl install redis && \
-    docker-php-ext-enable redis && \
-    apk del $PHPIZE_DEPS
+    docker-php-ext-enable redis
+
+# Install uploadprogress
+RUN pecl install uploadprogress && \
+    docker-php-ext-enable uploadprogress
+
+# Install APCu
+RUN pecl install apcu && \
+    docker-php-ext-enable apcu \
+
+# Install AVIF in GD
+# -- Runtime libs
+RUN apk add --no-cache \
+    libavif \
+    aom-libs \
+    libwebp \
+    libjpeg-turbo \
+    libpng \
+    freetype
+
+# -- Build deps for compiling gd with AVIF
+RUN apk add --no-cache --virtual .gd-build-deps \
+    libavif-dev \
+    aom-dev \
+    libwebp-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    freetype-dev
+
+# -- Rebuild PHP GD with AVIF enabled
+RUN docker-php-ext-configure gd \
+      --with-freetype \
+      --with-jpeg \
+      --with-webp \
+      --with-avif \
+ && docker-php-ext-install -j"$(nproc)" gd
+
+# Remove only gd build deps (keep runtime libs)
+RUN apk del .gd-build-deps
+# --- end AVIF support in GD ---
+
+# Clean dev tools
+RUN apk del autoconf gcc make libc-dev $PHPIZE_DEPS
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/
 
@@ -87,21 +127,36 @@ RUN set -eux; \
 # https://github.com/docker-library/drupal/pull/266#issuecomment-2273985526 \
   composer check-platform-reqs
 
-RUN mkdir "web/assets-cache"; \
-	chown -R www-data:www-data web/assets-cache; \
-  mkdir "web/public-files"; \
-	chown -R www-data:www-data web/public-files; \
-  mkdir "private-files"; \
-	chown -R www-data:www-data private-files; \
-  mkdir "config"; \
-	chown -R www-data:www-data config; \
-  mkdir "tmp"; \
-	chown -R www-data:www-data tmp; \
-	# delete composer cache \
-	rm -rf "$COMPOSER_HOME"
+RUN mkdir -p \
+    config \
+    patch \
+    private-files \
+    web/assets-cache \
+    web/libraries \
+    web/public-files \
+    web/public-files/styles \
+    web/public-files/styles/paragraphs_type_icon \
+    web/sites/default/files/translations \
+    tmp \
+    tmp/translations \
 
 COPY ./settings.php /opt/drupal/web/sites/default/
 COPY ./settings.local.php /opt/drupal/web/sites/default/
+
+# Set permissions
+RUN chgrp -R 0 /opt/drupal && \
+    chown -R 0 /opt/drupal && \
+    chmod -R g=u /opt/drupal && \
+    chmod -R g-w /opt/drupal && \
+    chmod -R g+rwX \
+      /opt/drupal/config \
+      /opt/drupal/private-files \
+      /opt/drupal/web/assets-cache \
+      /opt/drupal/web/public-files \
+      /opt/drupal/web/sites/default/files/translations \
+      /opt/drupal/tmp && \
+    find /opt/drupal -type d -exec chmod g+s {} \; && \
+    rm -rf "$COMPOSER_HOME"
 
 ENV PATH=${PATH}:/opt/drupal/vendor/bin
 

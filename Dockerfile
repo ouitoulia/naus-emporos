@@ -68,7 +68,7 @@ RUN pecl install uploadprogress && \
 
 # Install APCu
 RUN pecl install apcu && \
-    docker-php-ext-enable apcu \
+    docker-php-ext-enable apcu
 
 # Install AVIF in GD
 # -- Runtime libs
@@ -138,7 +138,7 @@ RUN mkdir -p \
     web/public-files/styles/paragraphs_type_icon \
     web/sites/default/files/translations \
     tmp \
-    tmp/translations \
+    tmp/translations
 
 COPY ./settings.php /opt/drupal/web/sites/default/
 COPY ./settings.local.php /opt/drupal/web/sites/default/

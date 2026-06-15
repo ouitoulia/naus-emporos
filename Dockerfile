@@ -107,7 +107,7 @@ RUN apk del autoconf gcc make libc-dev $PHPIZE_DEPS
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/
 
 # https://github.com/ouitoulia/diagraphe/releases
-ENV OUITOULIA_VERSION=10.6.4
+ENV OUITOULIA_VERSION=10.6.5
 
 # https://github.com/docker-library/drupal/pull/259
 # https://github.com/moby/buildkit/issues/4503
